@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חיפוש כתובת עם Google Maps</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgw0ZTPktGvbh9ptrbsneIXJaOHF8HTfQ&libraries=places"></script>
+    <script>
+        const polygons = [
+            [
+                {lat: 7.914811843686066, lng: 98.2859729460488},
+                {lat: 7.9192537519531, lng: 98.28664034738492},
+                {lat: 7.920739897816898, lng: 98.29053543251648},
+            ],
+            [
+                {lat: 7.895586253099057, lng: 98.3179768899873},
+                {lat: 7.893715874476386, lng: 98.33788960971387},
+                {lat: 7.869740272174729, lng: 98.33462804355176},
+            ]
+        ];
+        
+        function isPointInPolygon(point, polygon) {
+            let x = point.lat, y = point.lng;
+            let inside = false;
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                let xi = polygon[i].lat, yi = polygon[i].lng;
+                let xj = polygon[j].lat, yj = polygon[j].lng;
+                let intersect = ((yi > y) !== (yj > y)) &&
+                                (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+        
+        function getPrice(location) {
+            if (isPointInPolygon(location, polygons[0])) return 200;
+            if (isPointInPolygon(location, polygons[1])) return 300;
+            return "אין מחיר זמין למיקום זה";
+        }
+        
+        function initAutocomplete() {
+            var input = document.getElementById('address');
+            var autocomplete = new google.maps.places.Autocomplete(input);
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 32.0853, lng: 34.7818 }, // תל אביב כברירת מחדל
+                zoom: 13
+            });
+            var marker = new google.maps.Marker({ map: map });
+            
+            autocomplete.addListener('place_changed', function() {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) return;
+                
+                var location = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
+                var price = getPrice(location);
+                
+                map.setCenter(place.geometry.location);
+                map.setZoom(15);
+                marker.setPosition(place.geometry.location);
+                document.getElementById('price').innerText = "מחיר: " + price;
+            });
+        }
+        
+        google.maps.event.addDomListener(window, 'load', initAutocomplete);
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #map { height: 400px; width: 100%; margin-top: 20px; }
+        input { width: 80%; padding: 10px; font-size: 16px; }
+        #price { margin-top: 20px; font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>חיפוש כתובת</h2>
+    <input id="address" type="text" placeholder="הכנס כתובת...">
+    <div id="map"></div>
+    <div id="price">מחיר: </div>
+</body>
+</html>
