@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>טופס עם מיקום</title>
+    <title>טופס שליחת מיקום עבור משלוחי מנות</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgw0ZTPktGvbh9ptrbsneIXJaOHF8HTfQ&libraries=places"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -51,7 +51,8 @@
 
         input[type="text"],
         input[type="tel"],
-        input[type="email"] {
+        input[type="email"],
+        textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
@@ -60,7 +61,13 @@
             transition: all 0.3s;
         }
 
-        input:focus {
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input:focus,
+        textarea:focus {
             border-color: #3498db;
             outline: none;
             box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
@@ -144,7 +151,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>טופס מיקום</h1>
+        <h1>טופס שליחת מיקום עבור משלוחי מנות</h1>
         <form id="locationForm">
             <div class="form-group">
                 <label>שם:</label>
@@ -166,6 +173,11 @@
                 <input id="autocomplete" type="text" placeholder="הקלד כתובת..." required>
             </div>
 
+            <div class="form-group">
+                <label>הערות (מספר בית, דירה וכדומה):</label>
+                <textarea id="notes"></textarea>
+            </div>
+
             <div id="map"></div>
             <input type="hidden" id="lat">
             <input type="hidden" id="lng">
@@ -178,7 +190,7 @@
     <div class="success-modal">
         <i class="fas fa-check-circle modal-icon"></i>
         <h2>הטופס נשלח בהצלחה!</h2>
-        <p>תודה על פנייתך</p>
+        <p>תודה על השליחה</p>
         <button class="close-modal">סגור</button>
     </div>
 
@@ -244,6 +256,7 @@
                     phone: $('#phone').val(),
                     email: $('#email').val(),
                     address: $('#autocomplete').val(),
+                    notes: $('#notes').val(),
                     latitude: $('#lat').val(),
                     longitude: $('#lng').val()
                 };
