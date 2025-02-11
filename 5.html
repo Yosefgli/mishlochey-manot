@@ -82,7 +82,10 @@
                     longitude: $('#lng').val()
                 };
                 
-                $.post('https://hook.integrator.boost.space/b51ufgh73w5ksauycxgblhgiso4ob0fs', JSON.stringify(formData), function(response) {
+                let queryString = $.param(formData);
+                let webhookUrl = 'https://hook.integrator.boost.space/b51ufgh73w5ksauycxgblhgiso4ob0fs?' + queryString;
+                
+                $.post(webhookUrl, function(response) {
                     console.log('Data sent:', response);
                 });
                 
