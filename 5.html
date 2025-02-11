@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>טופס עם מיקום</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgw0ZTPktGvbh9ptrbsneIXJaOHF8HTfQ&libraries=places"></script>
+</head>
+<body>
+    <form id="locationForm">
+        <label>שם:</label>
+        <input type="text" id="name" required><br>
+        
+        <label>טלפון:</label>
+        <input type="tel" id="phone" required><br>
+        
+        <label>אימייל:</label>
+        <input type="email" id="email" required><br>
+        
+        <label>כתובת:</label>
+        <input id="autocomplete" type="text" placeholder="הקלד כתובת..." required>
+        <div id="map" style="height: 300px; width: 100%;"></div>
+        <input type="hidden" id="lat">
+        <input type="hidden" id="lng">
+        
+        <button type="submit">שלח</button>
+    </form>
+    
+    <script>
+        let map;
+        let marker;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 32.0853, lng: 34.7818 },
+                zoom: 15
+            });
+            marker = new google.maps.Marker({
+                map: map,
+                draggable: true
+            });
+            
+            let autocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('autocomplete')
+            );
+            autocomplete.bindTo('bounds', map);
+            
+            autocomplete.addListener('place_changed', function() {
+                let place = autocomplete.getPlace();
+                if (!place.geometry) return;
+                
+                map.setCenter(place.geometry.location);
+                marker.setPosition(place.geometry.location);
+                document.getElementById('lat').value = place.geometry.location.lat();
+                document.getElementById('lng').value = place.geometry.location.lng();
+            });
+            
+            marker.addListener('dragend', function() {
+                let position = marker.getPosition();
+                document.getElementById('lat').value = position.lat();
+                document.getElementById('lng').value = position.lng();
+            });
+        }
+        
+        $(document).ready(function() {
+            initMap();
+            $('#locationForm').submit(function(event) {
+                event.preventDefault();
+                let formData = {
+                    name: $('#name').val(),
+                    phone: $('#phone').val(),
+                    email: $('#email').val(),
+                    address: $('#autocomplete').val(),
+                    latitude: $('#lat').val(),
+                    longitude: $('#lng').val()
+                };
+                console.log(formData); // ניתן לשלוח את זה לשרת כאן
+                alert('הנתונים נקלטו בהצלחה!');
+            });
+        });
+    </script>
+</body>
+</html>
