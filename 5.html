@@ -1,37 +1,192 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>טופס עם מיקום</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgw0ZTPktGvbh9ptrbsneIXJaOHF8HTfQ&libraries=places"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .modal-icon {
+            color: #2ecc71;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .close-modal {
+            background: #e0e0e0;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            background: #d0d0d0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <form id="locationForm">
-        <label>שם:</label>
-        <input type="text" id="name" required><br>
-        
-        <label>טלפון:</label>
-        <input type="tel" id="phone" required><br>
-        
-        <label>אימייל:</label>
-        <input type="email" id="email" required><br>
-        
-        <label>כתובת:</label>
-        <input id="autocomplete" type="text" placeholder="הקלד כתובת..." required>
-        <div id="map" style="height: 400px; width: 400px; margin: auto;"></div>
-        <input type="hidden" id="lat">
-        <input type="hidden" id="lng">
-        
-        <button type="submit">שלח</button>
-    </form>
-    
+    <div class="container">
+        <h1>טופס מיקום</h1>
+        <form id="locationForm">
+            <div class="form-group">
+                <label>שם:</label>
+                <input type="text" id="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>טלפון:</label>
+                <input type="tel" id="phone" required>
+            </div>
+            
+            <div class="form-group">
+                <label>אימייל:</label>
+                <input type="email" id="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label>כתובת:</label>
+                <input id="autocomplete" type="text" placeholder="הקלד כתובת..." required>
+            </div>
+
+            <div id="map"></div>
+            <input type="hidden" id="lat">
+            <input type="hidden" id="lng">
+            
+            <button type="submit">שלח טופס</button>
+        </form>
+    </div>
+
+    <div class="modal-overlay"></div>
+    <div class="success-modal">
+        <i class="fas fa-check-circle modal-icon"></i>
+        <h2>הטופס נשלח בהצלחה!</h2>
+        <p>תודה על פנייתך</p>
+        <button class="close-modal">סגור</button>
+    </div>
+
     <script>
         let map;
         let marker;
         function initMap() {
-            const initialLocation = { lat: 7.8804, lng: 98.3923 }; // פוקט, תאילנד
+            const initialLocation = { lat: 7.8804, lng: 98.3923 };
             
             map = new google.maps.Map(document.getElementById('map'), {
                 center: initialLocation,
@@ -71,6 +226,17 @@
         
         $(document).ready(function() {
             initMap();
+            
+            function showSuccessModal() {
+                $('.modal-overlay, .success-modal').fadeIn(300);
+            }
+
+            function hideSuccessModal() {
+                $('.modal-overlay, .success-modal').fadeOut(300);
+            }
+
+            $('.close-modal, .modal-overlay').click(hideSuccessModal);
+
             $('#locationForm').submit(function(event) {
                 event.preventDefault();
                 let formData = {
@@ -87,9 +253,8 @@
                 
                 $.post(webhookUrl, function(response) {
                     console.log('Data sent:', response);
+                    showSuccessModal();
                 });
-                
-                alert('הנתונים נקלטו בהצלחה!');
             });
         });
     </script>
