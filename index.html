@@ -303,32 +303,32 @@
     }
 
     $('#locationForm').submit(function(event) {
-        event.preventDefault();
-        
-        // מיד מציג את החלונית
-        showSuccessModal();
-        
-        let formData = {
-            address: $('#autocomplete').val(),
-            notes: $('#notes').val(),
-            latitude: $('#lat').val(),
-            longitude: $('#lng').val()
-        };
-        
-        let queryString = $.param(formData);
-        let webhookUrl = 'https://hook.integrator.boost.space/b51ufgh73w5ksauycxgblhgiso4ob0fs?' + queryString;
-        
-        // קבלת פרמטר ה-ID
-        let id = getUrlParameter('ID');
-        
-        // שולח את הנתונים לווב הוק ואז מפנה לדף הבא
-        setTimeout(function() {
-            $.post(webhookUrl, function(response) {
-                console.log('Data sent:', response);
-                window.location.href = 'https://form.fillout.com/t/7VvR4poboGus?IDSUB=' + id;
-            });
-        }, 2000);
-    });
+    event.preventDefault();
+    
+    // קבלת פרמטר ה-ID
+    let id = getUrlParameter('ID');
+    
+    // מיד מציג את החלונית
+    showSuccessModal();
+    
+    let formData = {
+        address: $('#autocomplete').val(),
+        notes: $('#notes').val(),
+        latitude: $('#lat').val(),
+        longitude: $('#lng').val(),
+        id: id  // הוספת פרמטר ה-ID לנתונים שנשלחים
+    };
+    
+    let queryString = $.param(formData);
+    let webhookUrl = 'https://hook.integrator.boost.space/b51ufgh73w5ksauycxgblhgiso4ob0fs?' + queryString;
+    
+    // שולח את הנתונים לווב הוק ואז מפנה לדף הבא
+    setTimeout(function() {
+        $.post(webhookUrl, function(response) {
+            console.log('Data sent:', response);
+            window.location.href = 'https://form.fillout.com/t/7VvR4poboGus?IDSUB=' + id;
+        });
+    }, 2000);
 });
 </script>
 </body>
