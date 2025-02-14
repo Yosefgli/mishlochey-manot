@@ -187,44 +187,29 @@
     <div class="container">
         <h1>בחירת כתובת מגורים</h1>
         <form id="locationForm">
-            <div class="form-group">
-                <label>שם:</label>
-                <input type="text" id="name" required>
-            </div>
-            
-            <div class="form-group">
-                <label>טלפון:</label>
-                <input type="tel" id="phone" required>
-            </div>
-            
-            <div class="form-group">
-                <label>אימייל:</label>
-                <input type="email" id="email" required>
-            </div>
-            
-            <div class="form-group">
-                <label>כתובת:</label>
-                <input id="autocomplete" type="text" placeholder="הקלד כתובת...">
-            </div>
+    <div class="form-group">
+        <label>כתובת:</label>
+        <input id="autocomplete" type="text" placeholder="הקלד כתובת...">
+    </div>
 
-            <div class="form-group">
-                <label>הערות (מספר בית, דירה וכדומה):</label>
-                <textarea id="notes"></textarea>
-            </div>
+    <div class="form-group">
+        <label>הערות (מספר בית, דירה וכדומה):</label>
+        <textarea id="notes"></textarea>
+    </div>
 
-            <div class="map-container">
-                <button type="button" class="gps-button" onclick="getCurrentLocation()">
-                    <i class="fas fa-location-arrow"></i>
-                    אתר את המיקום שלי
-                </button>
-                <div class="map-instructions">* ניתן לשנות את המיקום על ידי גרירת הסמן האדום</div>
-                <div id="map"></div>
-            </div>
-            <input type="hidden" id="lat">
-            <input type="hidden" id="lng">
-            
-            <button type="submit">שלח טופס</button>
-        </form>
+    <div class="map-container">
+        <button type="button" class="gps-button" onclick="getCurrentLocation()">
+            <i class="fas fa-location-arrow"></i>
+            אתר את המיקום שלי
+        </button>
+        <div class="map-instructions">* ניתן לשנות את המיקום על ידי גרירת הסמן האדום</div>
+        <div id="map"></div>
+    </div>
+    <input type="hidden" id="lat">
+    <input type="hidden" id="lng">
+    
+    <button type="submit">שלח טופס</button>
+</form>
     </div>
 
     <div class="modal-overlay"></div>
@@ -324,13 +309,11 @@
     showSuccessModal();
     
     let formData = {
-        name: $('#name').val(),
-        phone: $('#phone').val(),
-        email: $('#email').val(),
-        address: $('#autocomplete').val(),
-        notes: $('#notes').val(),
-        latitude: $('#lat').val(),
-        longitude: $('#lng').val()
+    address: $('#autocomplete').val(),
+    notes: $('#notes').val(),
+    latitude: $('#lat').val(),
+    longitude: $('#lng').val()
+};
     };
     
     let queryString = $.param(formData);
@@ -345,7 +328,7 @@
             console.log('Data sent:', response);
             window.location.href = 'https://form.fillout.com/t/7VvR4poboGus?IDSUB=' + id;
         });
-    }, 3000);
+    }, 2000);
 });
         });
 </script>
