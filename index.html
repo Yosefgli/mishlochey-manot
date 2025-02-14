@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>בחירת כתובת מגורים</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgw0ZTPktGvbh9ptrbsneIXJaOHF8HTfQ&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgw0ZTPktGvbh9ptrbsneIXJaOHF8HTfQ&libraries=places&callback=initMap" async defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         /* Previous styles remain the same */
@@ -296,41 +296,40 @@
     }
     
     $(document).ready(function() {
-        initMap();
+    initMap();
 
-        function showSuccessModal() {
-            $('.modal-overlay, .success-modal').fadeIn(300);
-        }
+    function showSuccessModal() {
+        $('.modal-overlay, .success-modal').fadeIn(300);
+    }
 
-        $('#locationForm').submit(function(event) {
-    event.preventDefault();
-    
-    // מיד מציג את החלונית
-    showSuccessModal();
-    
-    let formData = {
-    address: $('#autocomplete').val(),
-    notes: $('#notes').val(),
-    latitude: $('#lat').val(),
-    longitude: $('#lng').val()
-};
-    };
-    
-    let queryString = $.param(formData);
-    let webhookUrl = 'https://hook.integrator.boost.space/b51ufgh73w5ksauycxgblhgiso4ob0fs?' + queryString;
-    
-    // קבלת פרמטר ה-ID
-    let id = getUrlParameter('ID');
-    
-    // שולח את הנתונים לווב הוק ואז מפנה לדף הבא
-    setTimeout(function() {
-        $.post(webhookUrl, function(response) {
-            console.log('Data sent:', response);
-            window.location.href = 'https://form.fillout.com/t/7VvR4poboGus?IDSUB=' + id;
-        });
-    }, 2000);
+    $('#locationForm').submit(function(event) {
+        event.preventDefault();
+        
+        // מיד מציג את החלונית
+        showSuccessModal();
+        
+        let formData = {
+            address: $('#autocomplete').val(),
+            notes: $('#notes').val(),
+            latitude: $('#lat').val(),
+            longitude: $('#lng').val()
+        };
+        
+        let queryString = $.param(formData);
+        let webhookUrl = 'https://hook.integrator.boost.space/b51ufgh73w5ksauycxgblhgiso4ob0fs?' + queryString;
+        
+        // קבלת פרמטר ה-ID
+        let id = getUrlParameter('ID');
+        
+        // שולח את הנתונים לווב הוק ואז מפנה לדף הבא
+        setTimeout(function() {
+            $.post(webhookUrl, function(response) {
+                console.log('Data sent:', response);
+                window.location.href = 'https://form.fillout.com/t/7VvR4poboGus?IDSUB=' + id;
+            });
+        }, 2000);
+    });
 });
-        });
 </script>
 </body>
 </html>
