@@ -304,18 +304,48 @@
         initMap();
 
         function reloadMap() {
-    // שמירת המיקום הנוכחי של המפה לפני הטעינה מחדש
-    let currentCenter = map.getCenter();
-    let currentZoom = map.getZoom();
-    let currentMarkerPos = marker.getPosition();
+    // טעינה מחדש של המפה עם המיקום הנוכחי
+    const currentPosition = marker ? marker.getPosition() : { lat: 7.8804, lng: 98.3923 };
     
-    // טעינה מחדש של המפה
-    google.maps.event.trigger(map, 'resize');
+    // יצירת מפה חדשה
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: currentPosition,
+        zoom: 15
+    });
     
-    // החזרת המיקום הקודם
-    map.setCenter(currentCenter);
-    map.setZoom(currentZoom);
-    marker.setPosition(currentMarkerPos);
+    // יצירת סמן חדש
+    marker = new google.maps.Marker({
+        position: currentPosition,
+        map: map,
+        draggable: true
+    });
+    
+    // עדכון ערכי lat/lng בטופס
+    document.getElementById('lat').value = currentPosition.lat();
+    document.getElementById('lng').value = currentPosition.lng();
+    
+    // הוספת אירוע לסמן כשגוררים אותו
+    marker.addListener('dragend', function() {
+        let position = marker.getPosition();
+        document.getElementById('lat').value = position.lat();
+        document.getElementById('lng').value = position.lng();
+    });
+    
+    // הגדרה מחדש של autocomplete
+    let autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('autocomplete')
+    );
+    autocomplete.bindTo('bounds', map);
+    
+    autocomplete.addListener('place_changed', function() {
+        let place = autocomplete.getPlace();
+        if (!place.geometry) return;
+        
+        map.setCenter(place.geometry.location);
+        marker.setPosition(place.geometry.location);
+        document.getElementById('lat').value = place.geometry.location.lat();
+        document.getElementById('lng').value = place.geometry.location.lng();
+    });
 }
 
         function showSuccessModal() {
@@ -323,15 +353,17 @@
         }
 
         $('#locationForm').submit(function(event) {
-            event.preventDefault();
-            
-            $('#locationForm').submit(function(event) {
     event.preventDefault();
     
     // בדיקה אם שדה הכתובת ריק
     if ($('#autocomplete').val().trim() === '') {
+        // הוספת מסגרת אדומה לשדה
+        $('#autocomplete').css('border', '2px solid #e74c3c');
         alert('אנא הזן כתובת - זהו שדה חובה');
         return false; // עצירת שליחת הטופס
+    } else {
+        // אם הוזנה כתובת, מחזיר את המסגרת לצבע המקורי
+        $('#autocomplete').css('border', '2px solid #e0e0e0');
     }
     
     // קבלת פרמטר ה-ID
