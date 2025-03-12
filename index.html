@@ -198,13 +198,19 @@
     </div>
 
     <div class="map-container">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
         <button type="button" class="gps-button" onclick="getCurrentLocation()">
             <i class="fas fa-location-arrow"></i>
             אתר את המיקום שלי
         </button>
-        <div class="map-instructions">* ניתן לשנות את המיקום על ידי גרירת הסמן האדום</div>
-        <div id="map"></div>
+        <button type="button" class="gps-button" onclick="reloadMap()" style="background-color: #3498db;">
+            <i class="fas fa-sync-alt"></i>
+            טעינת מפה
+        </button>
     </div>
+    <div class="map-instructions">* ניתן לשנות את המיקום על ידי גרירת הסמן האדום</div>
+    <div id="map"></div>
+</div>
     <input type="hidden" id="lat">
     <input type="hidden" id="lng">
     
@@ -231,7 +237,7 @@
     }
 
     function initMap() {
-        const initialLocation = { lat: 7.8804, lng: 98.3923 }; // מיקום התחלתי בישראל
+        const initialLocation = { lat: 7.8804, lng: 98.3923 }; // מיקום התחלתי בפוקט
         
         map = new google.maps.Map(document.getElementById('map'), {
             center: initialLocation,
@@ -296,6 +302,21 @@
     
     $(document).ready(function() {
         initMap();
+
+        function reloadMap() {
+    // שמירת המיקום הנוכחי של המפה לפני הטעינה מחדש
+    let currentCenter = map.getCenter();
+    let currentZoom = map.getZoom();
+    let currentMarkerPos = marker.getPosition();
+    
+    // טעינה מחדש של המפה
+    google.maps.event.trigger(map, 'resize');
+    
+    // החזרת המיקום הקודם
+    map.setCenter(currentCenter);
+    map.setZoom(currentZoom);
+    marker.setPosition(currentMarkerPos);
+}
 
         function showSuccessModal() {
             $('.modal-overlay, .success-modal').fadeIn(300);
