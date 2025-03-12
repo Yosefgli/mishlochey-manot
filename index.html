@@ -304,30 +304,39 @@
         $('#locationForm').submit(function(event) {
             event.preventDefault();
             
-            // קבלת פרמטר ה-ID
-            let id = getUrlParameter('ID');
-            
-            // מיד מציג את החלונית
-            showSuccessModal();
-            
-            let formData = {
-                address: $('#autocomplete').val(),
-                notes: $('#notes').val(),
-                latitude: $('#lat').val(),
-                longitude: $('#lng').val(),
-                id: id
-            };
-            
-            let queryString = $.param(formData);
-            let webhookUrl = 'https://hook.integrator.boost.space/b51ufgh73w5ksauycxgblhgiso4ob0fs?' + queryString;
-            
-            setTimeout(function() {
-                $.post(webhookUrl, function(response) {
-                    console.log('Data sent:', response);
-                    window.location.href = 'https://form.fillout.com/t/7VvR4poboGus?IDSUB=' + id;
-                });
-            }, 2000);
+            $('#locationForm').submit(function(event) {
+    event.preventDefault();
+    
+    // בדיקה אם שדה הכתובת ריק
+    if ($('#autocomplete').val().trim() === '') {
+        alert('אנא הזן כתובת - זהו שדה חובה');
+        return false; // עצירת שליחת הטופס
+    }
+    
+    // קבלת פרמטר ה-ID
+    let id = getUrlParameter('ID');
+    
+    // מיד מציג את החלונית
+    showSuccessModal();
+    
+    let formData = {
+        address: $('#autocomplete').val(),
+        notes: $('#notes').val(),
+        latitude: $('#lat').val(),
+        longitude: $('#lng').val(),
+        id: id
+    };
+    
+    let queryString = $.param(formData);
+    let webhookUrl = 'https://hook.integrator.boost.space/b51ufgh73w5ksauycxgblhgiso4ob0fs?' + queryString;
+    
+    setTimeout(function() {
+        $.post(webhookUrl, function(response) {
+            console.log('Data sent:', response);
+            window.location.href = 'https://form.fillout.com/t/7VvR4poboGus?IDSUB=' + id;
         });
+    }, 2000);
+});
     });
 </script>
 </body>
